@@ -5,7 +5,7 @@
 #importation des librairies necessaires au traitement des données
 library(funModeling)
 library(dplyr)
-
+library (plyr)
 #se mettre dans le dossier ou on veut travailler 
 setwd("C:/Users/Soumia/Desktop/Données")
 
@@ -75,8 +75,57 @@ colnames(dfnew)[colnames(dfnew)=="DateDeLeveeCotraitantSousTraitant"] <- "SousTr
 colnames(dfnew)[colnames(dfnew)=="DateDeLeveeMandataire"] <- "Mandataire"
 
 #probleme au niveau des conversion du typage des deux colonnes 
+#parce que ça commençait par NULL 
 #dfnew$Mandataire<-as.Date(dfnew$Mandataire)
 #dfnew$SousTraitant<- as.Date(dfnew$SousTraitant)
 
+#modification des NULL 
+dfnew$Mandataire[dfnew$Mandataire == "NULL"]<- NA
+dfnew$SousTraitant[dfnew$SousTraitant == "NULL"]<- NA
+dfnew$Mandataire<-as.Date(dfnew$Mandataire)
+dfnew$SousTraitant<-as.Date(dfnew$SousTraitant)
+
 
 View(dfnew)
+
+#résumé des données du Data set
+summary(dfnew)
+
+
+#afin de connaitre si y'a pas d'erreurs d'ecritures, ça nous ressort toutes les modalités 
+levels(dfnew$CategorieReserve)
+levels(dfnew$ModeleReserve)
+
+#modification des valeurs de la colonne CategorieReserve
+dfnew$CategorieReserve <- revalue (dfnew$CategorieReserve , c("EXECUTION"="EXEC"))
+
+#c'est sur que ça marche mais je veux quelque chose de plus pratique
+#CategorieReserve[CategorieReserve == "Autre"]<- autre
+
+#2eme solution
+#daycols = c("dfnew$CategorieReserve")
+#for(icol in daycols){
+#  if(icol =="Autre" | icol =="Autres" | icol =="autre"  ){
+#    icol <- autre
+#  }
+#}
+
+#remplacer quelques données mal ecrites
+#colonne modelreserve
+dfnew$ModeleReserve[dfnew$ModeleReserve %in% c("Autre","Autres","autre","autres")] <- "autre"
+dfnew$ModeleReserve[dfnew$ModeleReserve %in% c("Joints / joints silicone","joint sylicone a réaliser","Joint","joint","Joint silicone")]<- "joint"
+
+#colonne metier
+dfnew$Metier[dfnew$Metier %in% c("PEINTURE 4B3","PEINTURE","Peinture","12-Peinture","Peintures","Peinture+Signalétique","LOT 13 - PEINTURE",
+                                 "PEINTURE RAVALEMENT NETTOYAGE","B1.12-PSG - PEINTURE  - SIGNALETIQUE","A11-PSG - PEINTURE  - SIGNALÉTIQUE")] <- "Peinture"
+
+#j'ai un probleme ça me l'est remet en Na's 
+#dfnew$Metier[dfnew$Metier %in% c("Plomberie","PLOMBERIE","PLOMBERIE LOGEMENT",
+                                # "Plomberie - sanitaire","A13-PLB - PLOMBERIE")]
+
+#dfnew$Metier[dfnew$Metier %in% c("Plomberie / CVC","13/14-Plomberies / CVC","Plomberie Sanitaire + CVC",
+                                # "Plomberie/Sanitaire/CVC","CVC PLOMBERIE","Plomberie CVC")]<-"plomberie+cvc"
+
+
+
+summary(dfnew$Metier)
