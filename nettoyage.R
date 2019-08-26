@@ -142,9 +142,11 @@ dfnew2<-dfnew
 View(dfnew)
 doublonstest<-which(duplicated(dfnew$Id))
 dfnew2$Id<- dfnew$Id[-doublonstest]
-View(dfnew2)
 
 
+#if(any(!is.na(dfnew$Mandataire))) dfnew$LeveeReserve <- ifelse(!(is.na(dfnew$Mandataire)), 1, 0)
+if(any(!is.na(dfnew$DateDeLeveeMOEMOA))) dfnew$LeveeReserve <- ifelse(!(is.na(dfnew$DateDeLeveeMOEMOA)), 1, 0)
+View(dfnew)
 
 sum(duplicated(dfnew$Id))
 summary(dfnew$id)
