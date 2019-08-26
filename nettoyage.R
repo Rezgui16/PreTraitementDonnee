@@ -126,6 +126,25 @@ dfnew$Metier[dfnew$Metier %in% c("PEINTURE 4B3","PEINTURE","Peinture","12-Peintu
 #dfnew$Metier[dfnew$Metier %in% c("Plomberie / CVC","13/14-Plomberies / CVC","Plomberie Sanitaire + CVC",
                                 # "Plomberie/Sanitaire/CVC","CVC PLOMBERIE","Plomberie CVC")]<-"plomberie+cvc"
 
+#fonction pour les doublons 
+#duplicated2 <- function(x){ 
+#  if (sum(dup <- duplicated(x))==0) 
+#    return(dup) 
+#  if (class(x) %in% c("data.frame","matrix")) 
+#    duplicated(rbind(x[dup,],x))[-(1:sum(dup))] 
+#  else duplicated(c(x[dup],x))[-(1:sum(dup))] 
+#}
+
+#appel de la fonction
+#doublons <- duplicated2(dfnew$Id)
+
+dfnew2<-dfnew
+View(dfnew)
+doublonstest<-which(duplicated(dfnew$Id))
+dfnew2$Id<- dfnew$Id[-doublonstest]
+View(dfnew2)
 
 
-summary(dfnew$Metier)
+
+sum(duplicated(dfnew$Id))
+summary(dfnew$id)
