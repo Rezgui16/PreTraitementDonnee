@@ -116,35 +116,18 @@ dfnew$ModeleReserve[dfnew$ModeleReserve %in% c("Autre","Autres","autre","autres"
 dfnew$ModeleReserve[dfnew$ModeleReserve %in% c("Joints / joints silicone","joint sylicone a réaliser","Joint","joint","Joint silicone")]<- "joint"
 
 #colonne metier
+#peinture
 dfnew$Metier[dfnew$Metier %in% c("PEINTURE 4B3","PEINTURE","Peinture","12-Peinture","Peintures","Peinture+Signalétique","LOT 13 - PEINTURE",
                                  "PEINTURE RAVALEMENT NETTOYAGE","B1.12-PSG - PEINTURE  - SIGNALETIQUE","A11-PSG - PEINTURE  - SIGNALÉTIQUE")] <- "Peinture"
+#plomberie
+dfnew$Metier[dfnew$Metier %in% c("Plomberie","PLOMBERIE","PLOMBERIE LOGEMENT","Plomberie - sanitaire","A13-PLB - PLOMBERIE")] <- "Plomberie"
 
-#j'ai un probleme ça me l'est remet en Na's 
-#dfnew$Metier[dfnew$Metier %in% c("Plomberie","PLOMBERIE","PLOMBERIE LOGEMENT",
-                                # "Plomberie - sanitaire","A13-PLB - PLOMBERIE")]
+#dfnew$Metier[dfnew$Metier %in% c("Plomberie CVC")] <- "Plomberie_CVC"
 
+summary(dfnew$Metier)
 #dfnew$Metier[dfnew$Metier %in% c("Plomberie / CVC","13/14-Plomberies / CVC","Plomberie Sanitaire + CVC",
                                 # "Plomberie/Sanitaire/CVC","CVC PLOMBERIE","Plomberie CVC")]<-"plomberie+cvc"
 
-#fonction pour les doublons 
-#duplicated2 <- function(x){ 
-#  if (sum(dup <- duplicated(x))==0) 
-#    return(dup) 
-#  if (class(x) %in% c("data.frame","matrix")) 
-#    duplicated(rbind(x[dup,],x))[-(1:sum(dup))] 
-#  else duplicated(c(x[dup],x))[-(1:sum(dup))] 
-#}
-
-#appel de la fonction
-#doublons <- duplicated2(dfnew$Id)
-
-dfnew2<-dfnew
-View(dfnew)
-doublonstest<-which(duplicated(dfnew$Id))
-dfnew2$Id<- dfnew$Id[-doublonstest]
-
-sum(duplicated(dfnew2$Id))
-summary(dfnew2$Id) 
 
 #creation de la nouvelle colonne en prenant en compte que la colonne leveeMoEMOA
 #if(any(!is.na(dfnew$DateDeLeveeMOEMOA))) dfnew$LeveeReserve <- ifelse(!(is.na(dfnew$DateDeLeveeMOEMOA)), 1, 0)
@@ -190,3 +173,24 @@ summary(dfnew$ReserbeBloquante)
 summary(dfnew$LeveeReserve)
 
 
+#fonction pour les doublons 
+#duplicated2 <- function(x){ 
+#  if (sum(dup <- duplicated(x))==0) 
+#    return(dup) 
+#  if (class(x) %in% c("data.frame","matrix")) 
+#    duplicated(rbind(x[dup,],x))[-(1:sum(dup))] 
+#  else duplicated(c(x[dup],x))[-(1:sum(dup))] 
+#}
+
+#appel de la fonction
+#doublons <- duplicated2(dfnew$Id)
+
+#eleminer les doublons de la base de données
+#connaitre le nombre de doublons 
+length(dfnew$Id)
+length(duplicated(dfnew$Id))
+
+dfnew<-dfnew[-which(duplicated(dfnew$Id)),]
+
+#le compte est bon 
+nrow(dfnew)
