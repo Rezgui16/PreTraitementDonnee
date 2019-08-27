@@ -143,10 +143,12 @@ View(dfnew)
 doublonstest<-which(duplicated(dfnew$Id))
 dfnew2$Id<- dfnew$Id[-doublonstest]
 
+#creation de la nouvelle colonne en prenant en compte que la colonne leveeMoEMOA
+#if(any(!is.na(dfnew$DateDeLeveeMOEMOA))) dfnew$LeveeReserve <- ifelse(!(is.na(dfnew$DateDeLeveeMOEMOA)), 1, 0)
 
-#if(any(!is.na(dfnew$Mandataire))) dfnew$LeveeReserve <- ifelse(!(is.na(dfnew$Mandataire)), 1, 0)
-if(any(!is.na(dfnew$DateDeLeveeMOEMOA))) dfnew$LeveeReserve <- ifelse(!(is.na(dfnew$DateDeLeveeMOEMOA)), 1, 0)
+#creation de la colonne cible en prenant en compte deux colonnes Mandataire et leveeMOEMOA
+if(any(!is.na(dfnew$DateDeLeveeMOEMOA)) | any(!is.na(dfnew$Mandataire))) dfnew$LeveeReserve <- ifelse(!(is.na(dfnew$DateDeLeveeMOEMOA)) | !(is.na(dfnew$Mandataire)), 1, 0)
 View(dfnew)
 
-sum(duplicated(dfnew$Id))
-summary(dfnew$id)
+sum(duplicated(dfnew2$Id))
+summary(dfnew2$Id)
