@@ -17,7 +17,7 @@ LR <- read.csv("c:/Users/Soumia/Desktop/Données/ListeReserves.csv",header = TRUE
                encoding = "UTF-8")
 
 #View(LR)
-
+summary(LR$CategorieReserve)
 #appreçu sur les données 
 #le nom de la premiere colonnne est incorrecte
 colnames(LR)[colnames(LR)=="X.U.FEFF.Id"] <- "Id" 
@@ -156,21 +156,37 @@ View(dfnew)
 summary(dfnew$CategorieReserve)
 #recodage de la variable categorieReserve en numeric
 #EXEC<-1, GPA<-2, OPR<-3
+
+#solution 1
+#dfnew$CategorieReserve[dfnew$CategorieReserve =="EXEC"] <- 1
+#dfnew$CategorieReserve[dfnew$CategorieReserve =="GPA"]  <- 2
+#dfnew$CategorieReserve[dfnew$CategorieReserve =="OPR"]  <- 3 
+
+#solution 2
 #if(dfnew$CategorieReserve =="EXEC"){dfnew$CategorieReserve <- 0}else if(dfnew$CategorieReserve =="GPA"){dfnew$CategorieReserve<-1}else(dfnew$CategorieReserve =="OPR"){dfnew$CategorieReserve <-2}
 
+#solution 3
 dfnew$CategorieReserve <- revalue (dfnew$CategorieReserve , c("EXEC"= 1))
 dfnew$CategorieReserve <- revalue (dfnew$CategorieReserve , c("GPA"= 2))
 dfnew$CategorieReserve <- revalue (dfnew$CategorieReserve , c("OPR"= 3))
 
-#conversion des reserves bloquante en type numeric,CategorieReserve
-dfnew$ReserbeBloquante<-as.numeric(dfnew$ReserbeBloquante)
-dfnew$CategorieReserve<-as.numeric(dfnew$CategorieReserve)
+#on a des valeurs NULL dans la colonne Categorie Reserve, on les met dans la deuxieme categorie GPA
+#dfnew$CategorieReserve[dfnew$CategorieReserve == "NULL"]<- 2
+dfnew$CategorieReserve <- revalue (dfnew$CategorieReserve , c("NULL"= 2))
+
+#conversion des reserves bloquante en type categoriel
+dfnew$ReserbeBloquante<-as.factor(dfnew$ReserbeBloquante)
+dfnew$LeveeReserve<-as.factor(dfnew$LeveeReserve)
+
+#verifier les typages des variables
+class(dfnew$LeveeReserve)
 class(dfnew$ReserbeBloquante)
 class(dfnew$CategorieReserve)
 
 
-#dfnew$CategorieReserve[dfnew$CategorieReserve =="EXEC"] <- 1
-#dfnew$CategorieReserve[dfnew$CategorieReserve =="GPA"]  <- 2
-#dfnew$CategorieReserve[dfnew$CategorieReserve =="OPR"]  <- 3
-
+#write.csv(dfnew,file="C:/Users/Soumia/Desktop/Données/dfnewExport.csv",row.names = FALSE, quote = FALSE)
 summary(dfnew$CategorieReserve)
+summary(dfnew$ReserbeBloquante)
+summary(dfnew$LeveeReserve)
+
+
