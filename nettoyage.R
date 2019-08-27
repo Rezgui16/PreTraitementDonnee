@@ -143,6 +143,9 @@ View(dfnew)
 doublonstest<-which(duplicated(dfnew$Id))
 dfnew2$Id<- dfnew$Id[-doublonstest]
 
+sum(duplicated(dfnew2$Id))
+summary(dfnew2$Id) 
+
 #creation de la nouvelle colonne en prenant en compte que la colonne leveeMoEMOA
 #if(any(!is.na(dfnew$DateDeLeveeMOEMOA))) dfnew$LeveeReserve <- ifelse(!(is.na(dfnew$DateDeLeveeMOEMOA)), 1, 0)
 
@@ -150,5 +153,22 @@ dfnew2$Id<- dfnew$Id[-doublonstest]
 if(any(!is.na(dfnew$DateDeLeveeMOEMOA)) | any(!is.na(dfnew$Mandataire))) dfnew$LeveeReserve <- ifelse(!(is.na(dfnew$DateDeLeveeMOEMOA)) | !(is.na(dfnew$Mandataire)), 1, 0)
 View(dfnew)
 
-sum(duplicated(dfnew2$Id))
-summary(dfnew2$Id)
+summary(dfnew$CategorieReserve)
+#recodage de la variable categorieReserve en numerique
+#if(dfnew$CategorieReserve =="EXEC"){dfnew$CategorieReserve <- 0}else if(dfnew$CategorieReserve =="GPA"){dfnew$CategorieReserve<-1}else(dfnew$CategorieReserve =="OPR"){dfnew$CategorieReserve <-2}
+
+dfnew$CategorieReserve <- revalue (dfnew$CategorieReserve , c("EXEC"= 1))
+dfnew$CategorieReserve <- revalue (dfnew$CategorieReserve , c("GPA"= 2))
+dfnew$CategorieReserve <- revalue (dfnew$CategorieReserve , c("OPR"= 3))
+
+#conversion des reserves bloquante en type numeric
+dfnew$ReserbeBloquante<-as.numeric(dfnew$ReserbeBloquante)
+class(dfnew$ReserbeBloquante)
+
+
+
+#dfnew$CategorieReserve[dfnew$CategorieReserve =="EXEC"] <- 1
+#dfnew$CategorieReserve[dfnew$CategorieReserve =="GPA"]  <- 2
+#dfnew$CategorieReserve[dfnew$CategorieReserve =="OPR"]  <- 3
+
+summary(dfnew$CategorieReserve)
