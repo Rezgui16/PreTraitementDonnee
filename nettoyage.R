@@ -194,3 +194,36 @@ dfnew<-dfnew[-which(duplicated(dfnew$Id)),]
 
 #le compte est bon 
 nrow(dfnew)
+#exportation de la base de données 
+write.csv(dfnew,file="C:/Users/Soumia/Desktop/Données/dfnewExport.csv",row.names = FALSE )
+#test
+#t <- read.csv("c:/Users/Soumia/Desktop/Données/dfnewExport.csv",header = TRUE, sep =',')
+
+#verifier les modalités des variables categorielles
+levels(dfnew$CategorieReserve)
+levels(dfnew$ReserbeBloquante)
+levels(dfnew$LeveeReserve)
+
+
+#quelques calculs sur des variables categorielles 
+#1
+library(ggplot2)
+library(ggmosaic)
+
+ggplot(dfnew)+
+  geom_mosaic(aes(x=product(LeveeReserve,ReserbeBloquante), fill=LeveeReserve))+
+  ylab("leveeRSV")+
+  xlab("Bloquante")+
+  ggtitle("Répartition des données en fonction du leveeReserve de si elles sont bloquantes ou pas")
+
+#sur celles non bloquantes on a plus de reserve levée que de non levée
+#par contre pour le bloquantes on a plus de non levée que de levée
+
+#2
+ggplot(dfnew)+
+  geom_mosaic(aes(x=product(LeveeReserve,CategorieReserve), fill=LeveeReserve), offset = 0.05)+
+  ylab("LeveeReserve")+
+  xlab("Categorie_RSV")+
+  ggtitle("Répartition des données en fonction des Categories")+
+  scale_fill_manual(values=c("#EE00EE", "#636363"))+
+  theme(axis.text.x = element_text(angle=30, hjust=1, vjust=1))
