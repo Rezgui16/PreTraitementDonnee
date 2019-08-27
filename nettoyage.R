@@ -154,17 +154,19 @@ if(any(!is.na(dfnew$DateDeLeveeMOEMOA)) | any(!is.na(dfnew$Mandataire))) dfnew$L
 View(dfnew)
 
 summary(dfnew$CategorieReserve)
-#recodage de la variable categorieReserve en numerique
+#recodage de la variable categorieReserve en numeric
+#EXEC<-1, GPA<-2, OPR<-3
 #if(dfnew$CategorieReserve =="EXEC"){dfnew$CategorieReserve <- 0}else if(dfnew$CategorieReserve =="GPA"){dfnew$CategorieReserve<-1}else(dfnew$CategorieReserve =="OPR"){dfnew$CategorieReserve <-2}
 
 dfnew$CategorieReserve <- revalue (dfnew$CategorieReserve , c("EXEC"= 1))
 dfnew$CategorieReserve <- revalue (dfnew$CategorieReserve , c("GPA"= 2))
 dfnew$CategorieReserve <- revalue (dfnew$CategorieReserve , c("OPR"= 3))
 
-#conversion des reserves bloquante en type numeric
+#conversion des reserves bloquante en type numeric,CategorieReserve
 dfnew$ReserbeBloquante<-as.numeric(dfnew$ReserbeBloquante)
+dfnew$CategorieReserve<-as.numeric(dfnew$CategorieReserve)
 class(dfnew$ReserbeBloquante)
-
+class(dfnew$CategorieReserve)
 
 
 #dfnew$CategorieReserve[dfnew$CategorieReserve =="EXEC"] <- 1
