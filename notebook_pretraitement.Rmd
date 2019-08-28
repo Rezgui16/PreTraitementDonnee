@@ -1,0 +1,389 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code. 
+
+Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Ctrl+Shift+Enter*. 
+
+```{r}
+#importation des librairies necessaires au traitement des donnÃ©es
+library(funModeling)
+library(dplyr)
+library (plyr)
+```
+
+
+```{r}
+#se mettre dans le dossier ou on veut travailler 
+setwd("C:/Users/Soumia/Desktop/Données")
+
+```
+
+
+```{r}
+#lecture du fichier des donnÃ©es contenant les RSV
+#encoding utilisÃ© pour enlever les carac speciaux et stringsAsFactor= FALSE pour ne pas avoir factor comme type
+
+LR <- read.csv("c:/Users/Soumia/Desktop/Données/ListeReserves.csv",header = TRUE, sep =';',
+               encoding = "UTF-8")
+```
+
+
+```{r}
+#View(LR)
+#Resumé les information d'une colonne 
+summary(LR$CategorieReserve)
+
+
+#le nom de la premiere colonnne est incorrecte
+colnames(LR)[colnames(LR)=="X.U.FEFF.Id"] <- "Id" 
+View(LR)
+```
+```{r}
+# Création d'une nouvelle base de donnees avec les colonnes qui nous interesse 
+#on eneleve tout ce qui est commentaires et données non fiables
+dfnew <- LR[, c(1:8, 10,12,14,15, 19:25)]
+```
+
+```{r}
+#permet d'avoir le nbr d'obs et le typage des vars
+#275803 obs. ET 19 variables
+str(dfnew)
+```
+```{r}
+#exploration des donnéees manquantes, nous remarquons des NULL dans quelques colonnes dont : CategorieResevre,Metier 
+summary(dfnew)
+```
+```{r}
+#enlever les accents des differentes colonnes
+colnames(dfnew)[colnames(dfnew)=="Métier"] <- "Metier" 
+colnames(dfnew)[colnames(dfnew)=="CatégorieMetier"] <- "CategorieMetier" 
+colnames(dfnew)[colnames(dfnew)=="EntitéId"] <- "EntiteId" 
+colnames(dfnew)[colnames(dfnew)=="Entité"] <- "Entite"
+colnames(dfnew)[colnames(dfnew)=="ReserbeBloquante"] <- "ReserveBloquante"
+```
+
+```{r}
+#renvoit, pour chaque variable, le nombre de valeurs  , le nombre de valeurs manquantes,
+#et le nombre de valeurs infinies (par exemple 1/0), ainsi que les pourcentages correspondant.
+df_status(dfnew)
+```
+```{r}
+#modifier les factor en Date
+#colonne dateCreation
+#si je veux prÃ©ciser le format
+#dfnew$DateCreation<- as.Date(dfnew$DateCreation,format = "%d/%m/%Y")
+dfnew$DateCreation<- as.Date(dfnew$DateCreation)
+
+#colonne date de derniere modification 
+dfnew$DateDerniereModification<- as.Date(dfnew$DateDerniereModification)
+
+#COLONNE Date de levee MOE/MOA
+dfnew$DateDeLeveeMOEMOA<- as.Date(dfnew$DateDeLeveeMOEMOA)
+
+#Colonne Date de levee potentielle 
+dfnew$DateLeveePotentielle<-as.Date(dfnew$DateLeveePotentielle)
+```
+
+```{r}
+#renommer des coclonnes ecriture trop longue
+colnames(dfnew)[colnames(dfnew)=="DateDeLeveeCotraitantSousTraitant"] <- "SousTraitant"
+colnames(dfnew)[colnames(dfnew)=="DateDeLeveeMandataire"] <- "Mandataire"
+
+#probleme au niveau des conversion du typage des deux colonnes 
+#parce que ça commence par NULL 
+#dfnew$Mandataire<-as.Date(dfnew$Mandataire)
+#dfnew$SousTraitant<- as.Date(dfnew$SousTraitant)
+```
+
+```{r}
+#modification des NULL 
+dfnew$Mandataire[dfnew$Mandataire == "NULL"]<- NA
+dfnew$SousTraitant[dfnew$SousTraitant == "NULL"]<- NA
+dfnew$Mandataire<-as.Date(dfnew$Mandataire)
+dfnew$SousTraitant<-as.Date(dfnew$SousTraitant)
+```
+
+
+```{r}
+df_status(dfnew)
+```
+```{r}
+#afin de connaitre si y'a pas d'erreurs d'ecritures, Ã§a nous ressort toutes les modalitÃ©s 
+levels(dfnew$CategorieReserve) #on ne devrait pas avoir de NULL
+#levels(dfnew$ModeleReserve) #beaucoup à modifier
+```
+```{r}
+#modification des valeurs de la colonne CategorieReserve
+dfnew$CategorieReserve <- revalue (dfnew$CategorieReserve , c("EXECUTION"="EXEC"))
+
+#c'est sur que Ã§a marche mais je veux quelque chose de plus pratique
+#CategorieReserve[CategorieReserve == "Autre"]<- autre
+
+#2eme solution
+#daycols = c("dfnew$CategorieReserve")
+#for(icol in daycols){
+#  if(icol =="Autre" | icol =="Autres" | icol =="autre"  ){
+#    icol <- autre
+#  }
+#}
+
+```
+ 
+```{r}
+#remplacer quelques donnÃ©es mal ecrites
+#colonne modelreserve
+
+dfnew$ModeleReserve <- as.character(dfnew$ModeleReserve)
+dfnew$ModeleReserve[dfnew$ModeleReserve %in% c("Autre","Autres","autre","autres")] <- "AUTRE"
+dfnew$ModeleReserve[dfnew$ModeleReserve %in% c("Joints / joints silicone","joint sylicone a réaliser","Joint","joint","Joint silicone",
+                                               "Joint étanchéité","Joint de finition","Calfeutrement / joint silicone","joints")]<- "JOINT"
+dfnew$ModeleReserve[dfnew$ModeleReserve %in% c("Nettoyage sur rail alu","Nettoyage")] <- "NETTOYAGE"
+dfnew$ModeleReserve[dfnew$ModeleReserve %in% c("Entrée d'air (Int)","Entrée d'air (Int) ou grille d'air (ext")] <- "ENTREE D'AIR"
+dfnew$ModeleReserve <- as.factor(dfnew$ModeleReserve)
+summary(dfnew$ModeleReserve)
+```
+```{r}
+#colonne metier
+#peinture
+dfnew$Metier[dfnew$Metier %in% c("PEINTURE 4B3","PEINTURE","Peinture","12-Peinture","Peintures","Peinture+Signalétique","LOT 13 - PEINTURE",
+                                 "PEINTURE RAVALEMENT NETTOYAGE","B1.12-PSG - PEINTURE  - SIGNALETIQUE","A11-PSG - PEINTURE  - SIGNALÉTIQUE",
+                                 "08 - PEINTURE","PEINTURE 4B1","PEINTURE / REVETEMENT","Peinture intérieure","Lot 12 - Peinture"
+                                 ,"PEINTRE","LOT 10 - PEINTURE / REVÊTEMENTS MURALS","Peintures (A2-A3-A4 )")] <- "PEINTURE"
+
+#plomberie
+dfnew$Metier[dfnew$Metier %in% c("Plomberie","PLOMBERIE","PLOMBERIE LOGEMENT","Plomberie - sanitaire","A13-PLB - PLOMBERIE",
+                                 "Plomberie sanitaire","13- Plomberies","LOT 16 - PLOMBERIE")] <- "PLOMBERIE"
+
+#il faut au moment de la lecture du fichier faire STRINGFACTOR= FALSE chose qui ne m'arrange pas, ça me donne pas accée au differents levels
+#je dois convertir en caractere puis remetter en factor à chaque changement 
+
+dfnew$Metier <- as.character(dfnew$Metier)
+dfnew$Metier[dfnew$Metier %in% c("CFO - CFA","ELECTRICITE (CDC)","CFA - CFO","ELECTRICITE (CFO-CFA)","Electricité - CFO/CFA",
+                                 "A14-CFO - COURANTS FORTS","ELEC_COURANT FAIBLE","electricite","Electricité ",
+                                 "16-Courant fort - Courant faible","ELEC_COURANT FORT","CFO/CFA","ELECTRICITE CFO_CFA",
+                                 "Electricité CFA/ CFO/SSI","COURANT FORT MISE EN SERVICE & ESSAIS","COURANT FORT AUTOCONTROLES",
+                                 "B3-CFO - COURANTS FORTS","Courants Forts","ELECTRICITE CFO/CFA","Electricité B. T.",
+                                 "12 - CFO/CFA","Courants Faibles","Electricite CFO/CFA","Electricité","CFO CFA","CFO","Electricité courants forts",
+                                 "Courant Fort","ELECTRICITE (CFA)","LOT - ELECTRICITE","ELECTRIQUE","ELEC","ELECTRICITE CFA")] <- "ELECTRICITE"
+
+dfnew$Metier[dfnew$Metier %in% c("Plomberie / CVC","13/14-Plomberies / CVC","Plomberie Sanitaire + CVC",
+                                 "Plomberie/Sanitaire/CVC","CVC PLOMBERIE","Plomberie CVC","PLOMBERIE / CVC",
+                                 "B2.3-PFS - PLOMBERIE - FLUIDES SPECIAUX","Plomberie / Chauffage","PLOMBERIE & CHAUFFAGE",
+                                 "PLOMBERIE CVC","Chauffage / Plomberie / Ventilation","PLOMBERIE CHAUFFAGE ECS VMC","CLIMATISATION VENTILATION PLOMBERIE",
+                                 "Plomberie - CVC","CVC/PB")]<-"PLOMBERIE+CVC"
+
+dfnew$Metier[dfnew$Metier %in% c("B1.1-GRO - GROS-OEUVRE - MACONNERIES","A1-GRO - GROS OEUVRE - MACONNERIES - RAVALEMENT",
+                                 "14 Maçonnerie","CCO - MACONNERIE","Maçonnerie")] <- "MACONNERIE"
+
+dfnew$Metier[dfnew$Metier %in% c("GROS OUVRE","Gros oeuvre","Gros-Ouvre","Gros Oeuvre","Gros ouvre","GROS OEUVRE",
+                                 "GROS OEUVRE","GROS  OEUVRE","ML1 INSTALLATION DE CHANTIER - GROS OEUVRE","Gros Ouvre",
+                                 "1-Gros Oeuvre")] <- "GROS OEUVRES"
+
+dfnew$Metier[dfnew$Metier %in% c("Menuiserie intérieure","MENUISERIES EXTERIEURES/OCCULTATIONS","Menuiserie intérieure bois",
+                                 "Menuiserie intérieure (placard, meuble)","A9-MIN - MENUISERIES INTÉRIEURES",
+                                 "Menuiseries extérieures","A2-MFA - MENUISERIES EXTERIEURES - FACADES",
+                                 "Menuiserie extérieure PVC","MENUISERIES EXTERIEURES_OCCULTATIONS",
+                                 "Menuiserie extérieure+occultations","Menuiseries interieures",
+                                 "Menuiseries Exterieures Bois","Menuiseries Intérieures Bois",
+                                 "B1.10-MIN - MENUISERIES INTÉRIEURES","Menuiseries Intérieures",
+                                 "Menuiserie extérieure","5-Menuiserie intérieure","MENUISERIES EXTERIEURES",
+                                 "MENUISERIES INTERIEURES","MENUISERIE INTERIEURE","MENUISERIE BOIS",
+                                 "Menuiseries Extérieures","Pose Menuiserie extérieure",
+                                 "MENUISERIES EXTERIEURES ALU ","MENUISERIES INTERIEURE / EXTERIEURE","Menuiserie Interieur"
+                                 ,"MENUISERIES INTERIEURES BOIS","Menuiserie Interieure","Menuiserie Ext. Alu et Mur rideau",
+                                 "MENUISERIE EXT/ FOURNITURE PVC","MENUISERIE EXTERIEURE","LOT 5 - MENUISERIES EXTERIEURES / FACADES /STORES",
+                                 "MENUISERIES EXTERIEURES_OCCULTATIONS 2","LOT 07 - MENUISERIES INTERIEURES",
+                                 "B1.2-MFA - MENUISERIES EXTERIEURES - FACADES","Menuis. ext. PVC","METALLERIE SERRURERIE",
+                                 "Menuiserie intérieure (portes, plinthes)","04 - Menuiserie intérieures")] <- "MENUISERIE"
+
+dfnew$Metier[dfnew$Metier %in% c("CHAUFFAGE VENTILATION CLIMATISATION","B2.1-CVC - CHAUFFAGE VENTILATION CLIMATISATION DESENFUMAGE"
+                                 ,"A12.1-CVC - CHAUFFAGE VENTILATION CLIMATISATION DESENFUMAGE","14-CVC","CVC - D","LOT 15 - CVC",
+                                 "Chauffage, Ventilation, Climatisation et désenfumage","Ventilation")] <- "CVC"
+
+dfnew$Metier[dfnew$Metier %in% c("A4-SER - SERRURERIE","SERRURERIE_METALLERIE","ML2&3 ETANCHEITE - COUVERTURE - FACADE - SERRURERIE",
+                                "SERRURERIE","B1.4-SMS - SERRURERIE - METALLERIE - OUVRAGES DE SURETE","Serrurerie",
+                                "LOT 11 - MENUISERIE INTÉRIEURES / SERRURERIE / MÉTALLERIE")] <- "SERRURERIE"
+
+dfnew$Metier[dfnew$Metier %in% c("Faux Plafonds - GRG","Cloisons modulaires/Faux plafond",
+                                 "REVETEMENTS DURS",
+                                 "Platrerie","Faux Plafond","FAUX PLAFOND","USdata$Cause <- factor(USdata$Cause)",
+                                 "6-Faux Plafond Minéral","Revêtements de murs ","PLATRERIE PEINTURE FAUX PLAFOND",
+                                 "B1.7-FPL - FAUX PLAFOND","6-Faux Plafonds","A6-FPL - FAUX PLAFOND","Faux plafonds",
+                                 "Cloisons plaque de plâtre","CLOISONS_DOUBLAGES","CLOISONS DOUBLAGES",
+                                 "Cloisons Amovibles","4-Cloisons Amovible","Cloison","CLOISONS / DOUBLAGES",
+                                 "4-Cloison Doublage","A5-CDL - CLOISONS - DOUBLAGES","Cloison Doublage","Revêtement de sol et murs","4-Faux Plafond BA13",
+                                 "Cloisons de laboratoires","Faux Plafonds","Cloisons+Doublages+Plafonds suspendus","LOT 11 - FAUX PLAFOND","Plafond",
+                                 "PLATERIE -FAUX PLAFONDS","06 - Cloisons - Doublages - Faux-Plafond","CLOISON - PLATRERIE","Plafonds ","Cloisons plâtrerie")] <- "PLATERERIE"
+
+dfnew$Metier[dfnew$Metier %in% c("Facades","REVETEMENTS DE FACADE","Revêtements de façades","REVETEMENTS DE FACADES"
+                                 ,"REVETEMENTS DE FACADES","TRAITEMENT DE FACADE","Facade","FACADE","Façades","FACADES","FACADE - BARDAGE",
+                                 "Revêtements de facade+isolation+bardages","3-Façades respirantes","REVETEMENT_FAçADE","03 - Menuiseries extérieures - Façades")] <- "REVETEMENT FAçADE"
+
+dfnew$Metier[dfnew$Metier %in% c("Carrelage & Sol souple","Revêtement de sols souples","CARRELAGE FAIENCE","A8-RSD - REVÊTEMENTS DE SOL ET MURS DURS",
+                                 "Sols Durs et Minces","Sols durs","SOLS FAIENCE PARQUET","Faïence","Revêtement de sol","CARRELAGE",
+                                 "SOL (hors carrelage)","Revêtements de sols souples","SOLS DURS","SOLS SOUPLES","Carrelage",
+                                 "8/9-Sols durs / souples","Sols souple","Sols Souples","Revetement de sols","Sol souple",
+                                 "REVETEMENTS SOLS","CARRELAGE / SOLS SOUPLES","CARRELAGE_FAIENCE","A10-RSS - REVÊTEMENTS DE SOLS SOUPLES",
+                                 "B1.9-RSD - REVETEMENTS DE SOL ET MURS DURS","8-Sols Durs","REVETEMENTS DE SOL","LOT 7 - REVÊTEMENTS SOLS",
+                                 "Revêtements de sols","B1.9A-RSD - RESINE DE SOL","SOLS COULES","Revêtements de sols","Revêtements de sols ",
+                                 "Revêtments de sols durs","Carrelage Faience","REVÊTEMENT DE SOLS SOUPLES","Sols Souples - Sols durs","Sols PVC",
+                                 "LOT 12 - REVETEMENT DE SOLS SOUPLES ET DURS","Revêtement de sol souple")] <- "REVETEMENT SOL"
+
+dfnew$Metier[dfnew$Metier %in% c("Nettoyage","NETTOYAGE")] <- "NETTOYAGE"
+dfnew$Metier[dfnew$Metier %in% c("TUYAUTERIE","Tuyauterie","Tuyauteries CREO","Tuyauteur","Tuyauteries TEAM FLUIDES","Tuyauteries Doncieux")] <- "TUYAUTERIE"
+dfnew$Metier[dfnew$Metier %in% c("DEMOLITION")] <- "DEMOLITION"
+dfnew$Metier[dfnew$Metier %in% c("RENOVATION")] <- "RENOVATION"
+dfnew$Metier[dfnew$Metier %in% c("Charpente métallique","CHARPENTE")] <- "CHARPENTE"
+dfnew$Metier[dfnew$Metier %in% c("Etat des lieux")] <- "ETAT DES LIEUX"
+dfnew$Metier[dfnew$Metier %in% c("Terrassement - GO")] <- "TERASSEMENT"
+dfnew$Metier <- factor(dfnew$Metier)
+summary(dfnew$Metier)
+
+
+```
+```{r}
+summary(dfnew$Entreprise)
+```
+
+
+
+```{r}
+#creation de la nouvelle colonne en prenant en compte que la colonne leveeMoEMOA
+#if(any(!is.na(dfnew$DateDeLeveeMOEMOA))) dfnew$LeveeReserve <- ifelse(!(is.na(dfnew$DateDeLeveeMOEMOA)), 1, 0)
+
+#creation de la colonne cible en prenant en compte deux colonnes Mandataire et leveeMOEMOA
+if(any(!is.na(dfnew$DateDeLeveeMOEMOA)) | any(!is.na(dfnew$Mandataire))) dfnew$LeveeReserve <- ifelse(!(is.na(dfnew$DateDeLeveeMOEMOA)) | !(is.na(dfnew$Mandataire)), 1, 0)
+View(dfnew)
+```
+ 
+```{r}
+summary(dfnew$CategorieReserve)
+#recodage de la variable categorieReserve en numeric
+#EXEC<-1, GPA<-2, OPR<-3
+
+#solution 1
+#dfnew$CategorieReserve[dfnew$CategorieReserve =="EXEC"] <- 1
+#dfnew$CategorieReserve[dfnew$CategorieReserve =="GPA"]  <- 2
+#dfnew$CategorieReserve[dfnew$CategorieReserve =="OPR"]  <- 3 
+
+#solution 2
+#if(dfnew$CategorieReserve =="EXEC"){dfnew$CategorieReserve <- 0}else if(dfnew$CategorieReserve =="GPA"){dfnew$CategorieReserve<-1}else(dfnew$CategorieReserve =="OPR"){dfnew$CategorieReserve <-2}
+
+#solution 3
+dfnew$CategorieReserve <- revalue (dfnew$CategorieReserve , c("EXEC"= 1))
+dfnew$CategorieReserve <- revalue (dfnew$CategorieReserve , c("GPA"= 2))
+dfnew$CategorieReserve <- revalue (dfnew$CategorieReserve , c("OPR"= 3))
+
+```
+```{r}
+#on a des valeurs NULL dans la colonne Categorie Reserve, on les met dans la deuxieme categorie GPA
+#dfnew$CategorieReserve[dfnew$CategorieReserve == "NULL"]<- 2
+dfnew$CategorieReserve <- revalue (dfnew$CategorieReserve , c("NULL"= 2))
+```
+```{r}
+summary(dfnew$CategorieReserve)
+```
+```{r}
+#conversion des reserves bloquante en type categoriel
+dfnew$ReserbeBloquante<-as.factor(dfnew$ReserveBloquante)
+dfnew$LeveeReserve<-as.factor(dfnew$LeveeReserve)
+
+```
+
+```{r}
+#verifier les typages des variables
+class(dfnew$LeveeReserve)
+class(dfnew$ReserbeBloquante)
+class(dfnew$CategorieReserve)
+```
+```{r}
+#write.csv(dfnew,file="C:/Users/Soumia/Desktop/DonnÃ©es/dfnewExport.csv",row.names = FALSE, quote = FALSE)
+#verification des differentes modalités 
+summary(dfnew$CategorieReserve)
+summary(dfnew$ReserbeBloquante)
+summary(dfnew$LeveeReserve)
+```
+
+
+```{r}
+
+#fonction pour les doublons 
+#duplicated2 <- function(x){ 
+#  if (sum(dup <- duplicated(x))==0) 
+#    return(dup) 
+#  if (class(x) %in% c("data.frame","matrix")) 
+#    duplicated(rbind(x[dup,],x))[-(1:sum(dup))] 
+#  else duplicated(c(x[dup],x))[-(1:sum(dup))] 
+#}
+
+#appel de la fonction
+#doublons <- duplicated2(dfnew$Id)
+```
+
+
+```{r}
+#eleminer les doublons de la base de donnÃ©es
+#connaitre le nombre de doublons 
+length(dfnew$Id)
+length(duplicated(dfnew$Id))
+
+dfnew<-dfnew[-which(duplicated(dfnew$Id)),]
+
+
+```
+
+
+```{r}
+#le compte est bon 
+nrow(dfnew)
+#exportation de la base de donnéees 
+write.csv(dfnew,file="C:/Users/Soumia/Desktop/Données/dfnewExport.csv",row.names = FALSE )
+#test
+t <- read.csv("c:/Users/Soumia/Desktop/Données/dfnewExport.csv",header = TRUE, sep =',')
+View(t)
+```
+
+
+```{r}
+#Mise en place de quelques visualisations
+#quelques calculs sur des variables categorielles 
+#1
+library(ggplot2)
+library(ggmosaic)
+
+ggplot(dfnew)+
+  geom_mosaic(aes(x=product(LeveeReserve,ReserveBloquante), fill=LeveeReserve))+
+  ylab("leveeRSV")+
+  xlab("Bloquante")+
+  ggtitle("Répartition des données en fonction du leveeReserve de si elles sont bloquantes ou pas")
+
+#sur celles non bloquantes on a plus de reserve levée que de non levée
+#par contre pour le bloquantes on a plus de non levée que de levée
+
+```
+
+
+```{r}
+ggplot(dfnew)+
+  geom_mosaic(aes(x=product(LeveeReserve,CategorieReserve), fill=LeveeReserve), offset = 0.05)+
+  ylab("LeveeReserve")+
+  xlab("Categorie_RSV")+
+  ggtitle("Répartition des données en fonction des Categories")+
+  scale_fill_manual(values=c("#EE00EE", "#636363"))+
+  theme(axis.text.x = element_text(angle=30, hjust=1, vjust=1))
+```
+
+
+```{r}
+
+```
+
+
+Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Ctrl+Alt+I*.
+
+When you save the notebook, an HTML file containing the code and output will be saved alongside it (click the *Preview* button or press *Ctrl+Shift+K* to preview the HTML file).
+
+The preview shows you a rendered HTML copy of the contents of the editor. Consequently, unlike *Knit*, *Preview* does not run any R code chunks. Instead, the output of the chunk when it was last run in the editor is displayed.
