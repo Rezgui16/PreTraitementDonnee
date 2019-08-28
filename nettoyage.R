@@ -7,13 +7,13 @@ library(funModeling)
 library(dplyr)
 library (plyr)
 #se mettre dans le dossier ou on veut travailler 
-setwd("C:/Users/Soumia/Desktop/Donn√©es")
+setwd("C:/Users/Soumia/Desktop/DonnÈes")
 
 
 #lecture du fichier des donn√©es contenant les RSV
 #encoding utilis√© pour enlever les carac speciaux et stringsAsFactor= FALSE pour ne pas avoir factor comme type
 
-LR <- read.csv("c:/Users/Soumia/Desktop/Donn√©es/ListeReserves.csv",header = TRUE, sep =';',
+LR <- read.csv("c:/Users/Soumia/Desktop/DonnÈes/ListeReserves.csv",header = TRUE, sep =';',
                encoding = "UTF-8")
 
 #View(LR)
@@ -36,19 +36,19 @@ View(dfnew)
 #275803 obs. ET 19 variables
 str(dfnew)
 
-#exploration des donn√©es manquantes 
+#exploration des donnÈees manquantes 
 summary(dfnew)
 
 #enlever les accents des differentes colonnes
-colnames(dfnew)[colnames(dfnew)=="M√©tier"] <- "Metier" 
-colnames(dfnew)[colnames(dfnew)=="Cat√©gorieMetier"] <- "CategorieMetier" 
-colnames(dfnew)[colnames(dfnew)=="Entit√©Id"] <- "EntiteId" 
-colnames(dfnew)[colnames(dfnew)=="Entit√©"] <- "Entite" 
+colnames(dfnew)[colnames(dfnew)=="MÈtier"] <- "Metier" 
+colnames(dfnew)[colnames(dfnew)=="CatÈgorieMetier"] <- "CategorieMetier" 
+colnames(dfnew)[colnames(dfnew)=="EntitÈId"] <- "EntiteId" 
+colnames(dfnew)[colnames(dfnew)=="EntitÈ"] <- "Entite"
 
-#exporter la nouvelle base de donn√©es 
+#exporter la nouvelle base de donnÈes 
 #write.csv(dfnew,file="C:/Users/Soumia/Desktop/Donn√©es/dfnewExport.csv",row.names = FALSE, quote = FALSE)
 
-#renvoit, pour chaque variable, le nombre de valeurs √©gales √† z√©ro, le nombre de valeurs manquantes,
+#renvoit, pour chaque variable, le nombre de valeurs  , le nombre de valeurs manquantes,
 #et le nombre de valeurs infinies (par exemple 1/0), ainsi que les pourcentages correspondant.
 df_status(dfnew)
 
@@ -112,7 +112,7 @@ dfnew$CategorieReserve <- revalue (dfnew$CategorieReserve , c("EXECUTION"="EXEC"
 
 #remplacer quelques donn√©es mal ecrites
 #colonne modelreserve
-<<<<<<< HEAD
+
 dfnew$ModeleReserve <- as.character(dfnew$ModeleReserve)
 dfnew$ModeleReserve[dfnew$ModeleReserve %in% c("Autre","Autres","autre","autres")] <- "AUTRE"
 dfnew$ModeleReserve[dfnew$ModeleReserve %in% c("Joints / joints silicone","joint sylicone a rÈaliser","Joint","joint","Joint silicone",
@@ -127,15 +127,7 @@ dfnew$Metier[dfnew$Metier %in% c("PEINTURE 4B3","PEINTURE","Peinture","12-Peintu
                                  "PEINTURE RAVALEMENT NETTOYAGE","B1.12-PSG - PEINTURE  - SIGNALETIQUE","A11-PSG - PEINTURE  - SIGNAL…TIQUE",
                                  "08 - PEINTURE","PEINTURE 4B1","PEINTURE / REVETEMENT","Peinture intÈrieure","Lot 12 - Peinture"
                                  ,"PEINTRE","LOT 10 - PEINTURE / REV TEMENTS MURALS","Peintures (A2-A3-A4 )")] <- "PEINTURE"
-=======
-dfnew$ModeleReserve[dfnew$ModeleReserve %in% c("Autre","Autres","autre","autres")] <- "autre"
-dfnew$ModeleReserve[dfnew$ModeleReserve %in% c("Joints / joints silicone","joint sylicone a r√©aliser","Joint","joint","Joint silicone")]<- "joint"
 
-#colonne metier
-#peinture
-dfnew$Metier[dfnew$Metier %in% c("PEINTURE 4B3","PEINTURE","Peinture","12-Peinture","Peintures","Peinture+Signal√©tique","LOT 13 - PEINTURE",
-                                 "PEINTURE RAVALEMENT NETTOYAGE","B1.12-PSG - PEINTURE  - SIGNALETIQUE","A11-PSG - PEINTURE  - SIGNAL√âTIQUE")] <- "Peinture"
->>>>>>> d177d1336260ac29250ca9468813aecad6b4e7fd
 #plomberie
 dfnew$Metier[dfnew$Metier %in% c("Plomberie","PLOMBERIE","PLOMBERIE LOGEMENT","Plomberie - sanitaire","A13-PLB - PLOMBERIE",
                                  "Plomberie sanitaire","13- Plomberies","LOT 16 - PLOMBERIE")] <- "PLOMBERIE"
@@ -291,7 +283,7 @@ dfnew<-dfnew[-which(duplicated(dfnew$Id)),]
 
 #le compte est bon 
 nrow(dfnew)
-#exportation de la base de donn√©es 
+#exportation de la base de donnÈees 
 write.csv(dfnew,file="C:/Users/Soumia/Desktop/Donn√©es/dfnewExport.csv",row.names = FALSE )
 #test
 #t <- read.csv("c:/Users/Soumia/Desktop/Donn√©es/dfnewExport.csv",header = TRUE, sep =',')
@@ -301,12 +293,14 @@ levels(dfnew$CategorieReserve)
 levels(dfnew$ReserbeBloquante)
 levels(dfnew$LeveeReserve)
 
+#Mise en place de quelques visualisations 
 #test de dependance
 data <- c(10,11,13,14)
 #Hyp testing pour la prob que notre hypothese est vrai
 chisq.test(data)
 #X-squared = 0.83333, df = 3, p-value = 0.8415
 #valeur critique d'apres la table; p-value sup a 0.05 dc on accepte H0
+
 
 #quelques calculs sur des variables categorielles 
 #1
