@@ -2,33 +2,33 @@
 #{r, fig.show='hide',  warning=TRUE, message=FALSE}
 
 
-#importation des librairies necessaires au traitement des données
+#importation des librairies necessaires au traitement des donnÃ©es
 library(funModeling)
 library(dplyr)
 library (plyr)
 #se mettre dans le dossier ou on veut travailler 
-setwd("C:/Users/Soumia/Desktop/Données")
+setwd("C:/Users/Soumia/Desktop/DonnÃ©es")
 
 
-#lecture du fichier des données contenant les RSV
-#encoding utilisé pour enlever les carac speciaux et stringsAsFactor= FALSE pour ne pas avoir factor comme type
+#lecture du fichier des donnÃ©es contenant les RSV
+#encoding utilisÃ© pour enlever les carac speciaux et stringsAsFactor= FALSE pour ne pas avoir factor comme type
 
-LR <- read.csv("c:/Users/Soumia/Desktop/Données/ListeReserves.csv",header = TRUE, sep =';',
+LR <- read.csv("c:/Users/Soumia/Desktop/DonnÃ©es/ListeReserves.csv",header = TRUE, sep =';',
                encoding = "UTF-8")
 
 #View(LR)
 summary(LR$CategorieReserve)
-#appreçu sur les données 
+#appreÃ§u sur les donnÃ©es 
 #le nom de la premiere colonnne est incorrecte
 colnames(LR)[colnames(LR)=="X.U.FEFF.Id"] <- "Id" 
 View(LR)
 
 
-# Création d'une nouvelle base de donnees avec les colonnes qui nous interesse 
-#on eneleve tout ce qui est commentaires et données non fiables
+# CrÃ©ation d'une nouvelle base de donnees avec les colonnes qui nous interesse 
+#on eneleve tout ce qui est commentaires et donnÃ©es non fiables
 dfnew <- LR[, c(1:8, 10,12,14,15, 19:25)]
 
-#voir la nouvelle base de données 
+#voir la nouvelle base de donnÃ©es 
 View(dfnew)
 
 
@@ -36,19 +36,19 @@ View(dfnew)
 #275803 obs. ET 19 variables
 str(dfnew)
 
-#exploration des données manquantes 
+#exploration des donnÃ©es manquantes 
 summary(dfnew)
 
 #enlever les accents des differentes colonnes
-colnames(dfnew)[colnames(dfnew)=="Métier"] <- "Metier" 
-colnames(dfnew)[colnames(dfnew)=="CatégorieMetier"] <- "CategorieMetier" 
-colnames(dfnew)[colnames(dfnew)=="EntitéId"] <- "EntiteId" 
-colnames(dfnew)[colnames(dfnew)=="Entité"] <- "Entite" 
+colnames(dfnew)[colnames(dfnew)=="MÃ©tier"] <- "Metier" 
+colnames(dfnew)[colnames(dfnew)=="CatÃ©gorieMetier"] <- "CategorieMetier" 
+colnames(dfnew)[colnames(dfnew)=="EntitÃ©Id"] <- "EntiteId" 
+colnames(dfnew)[colnames(dfnew)=="EntitÃ©"] <- "Entite" 
 
-#exporter la nouvelle base de données 
-#write.csv(dfnew,file="C:/Users/Soumia/Desktop/Données/dfnewExport.csv",row.names = FALSE, quote = FALSE)
+#exporter la nouvelle base de donnÃ©es 
+#write.csv(dfnew,file="C:/Users/Soumia/Desktop/DonnÃ©es/dfnewExport.csv",row.names = FALSE, quote = FALSE)
 
-#renvoit, pour chaque variable, le nombre de valeurs égales à zéro, le nombre de valeurs manquantes,
+#renvoit, pour chaque variable, le nombre de valeurs Ã©gales Ã  zÃ©ro, le nombre de valeurs manquantes,
 #et le nombre de valeurs infinies (par exemple 1/0), ainsi que les pourcentages correspondant.
 df_status(dfnew)
 
@@ -57,7 +57,7 @@ df_status(dfnew)
 
 #modifier les factor en Date
 #colonne dateCreation
-#si je veux préciser le format
+#si je veux prÃ©ciser le format
 #dfnew$DateCreation<- as.Date(dfnew$DateCreation,format = "%d/%m/%Y")
 dfnew$DateCreation<- as.Date(dfnew$DateCreation)
 
@@ -75,7 +75,7 @@ colnames(dfnew)[colnames(dfnew)=="DateDeLeveeCotraitantSousTraitant"] <- "SousTr
 colnames(dfnew)[colnames(dfnew)=="DateDeLeveeMandataire"] <- "Mandataire"
 
 #probleme au niveau des conversion du typage des deux colonnes 
-#parce que ça commençait par NULL 
+#parce que Ã§a commenÃ§ait par NULL 
 #dfnew$Mandataire<-as.Date(dfnew$Mandataire)
 #dfnew$SousTraitant<- as.Date(dfnew$SousTraitant)
 
@@ -88,18 +88,18 @@ dfnew$SousTraitant<-as.Date(dfnew$SousTraitant)
 
 View(dfnew)
 
-#résumé des données du Data set
+#rÃ©sumÃ© des donnÃ©es du Data set
 summary(dfnew)
 
 
-#afin de connaitre si y'a pas d'erreurs d'ecritures, ça nous ressort toutes les modalités 
+#afin de connaitre si y'a pas d'erreurs d'ecritures, Ã§a nous ressort toutes les modalitÃ©s 
 levels(dfnew$CategorieReserve)
 levels(dfnew$ModeleReserve)
 
 #modification des valeurs de la colonne CategorieReserve
 dfnew$CategorieReserve <- revalue (dfnew$CategorieReserve , c("EXECUTION"="EXEC"))
 
-#c'est sur que ça marche mais je veux quelque chose de plus pratique
+#c'est sur que Ã§a marche mais je veux quelque chose de plus pratique
 #CategorieReserve[CategorieReserve == "Autre"]<- autre
 
 #2eme solution
@@ -110,8 +110,9 @@ dfnew$CategorieReserve <- revalue (dfnew$CategorieReserve , c("EXECUTION"="EXEC"
 #  }
 #}
 
-#remplacer quelques données mal ecrites
+#remplacer quelques donnÃ©es mal ecrites
 #colonne modelreserve
+<<<<<<< HEAD
 dfnew$ModeleReserve <- as.character(dfnew$ModeleReserve)
 dfnew$ModeleReserve[dfnew$ModeleReserve %in% c("Autre","Autres","autre","autres")] <- "AUTRE"
 dfnew$ModeleReserve[dfnew$ModeleReserve %in% c("Joints / joints silicone","joint sylicone a réaliser","Joint","joint","Joint silicone",
@@ -126,6 +127,15 @@ dfnew$Metier[dfnew$Metier %in% c("PEINTURE 4B3","PEINTURE","Peinture","12-Peintu
                                  "PEINTURE RAVALEMENT NETTOYAGE","B1.12-PSG - PEINTURE  - SIGNALETIQUE","A11-PSG - PEINTURE  - SIGNALÉTIQUE",
                                  "08 - PEINTURE","PEINTURE 4B1","PEINTURE / REVETEMENT","Peinture intérieure","Lot 12 - Peinture"
                                  ,"PEINTRE","LOT 10 - PEINTURE / REVÊTEMENTS MURALS","Peintures (A2-A3-A4 )")] <- "PEINTURE"
+=======
+dfnew$ModeleReserve[dfnew$ModeleReserve %in% c("Autre","Autres","autre","autres")] <- "autre"
+dfnew$ModeleReserve[dfnew$ModeleReserve %in% c("Joints / joints silicone","joint sylicone a rÃ©aliser","Joint","joint","Joint silicone")]<- "joint"
+
+#colonne metier
+#peinture
+dfnew$Metier[dfnew$Metier %in% c("PEINTURE 4B3","PEINTURE","Peinture","12-Peinture","Peintures","Peinture+SignalÃ©tique","LOT 13 - PEINTURE",
+                                 "PEINTURE RAVALEMENT NETTOYAGE","B1.12-PSG - PEINTURE  - SIGNALETIQUE","A11-PSG - PEINTURE  - SIGNALÃ‰TIQUE")] <- "Peinture"
+>>>>>>> d177d1336260ac29250ca9468813aecad6b4e7fd
 #plomberie
 dfnew$Metier[dfnew$Metier %in% c("Plomberie","PLOMBERIE","PLOMBERIE LOGEMENT","Plomberie - sanitaire","A13-PLB - PLOMBERIE",
                                  "Plomberie sanitaire","13- Plomberies","LOT 16 - PLOMBERIE")] <- "PLOMBERIE"
@@ -254,7 +264,7 @@ class(dfnew$ReserbeBloquante)
 class(dfnew$CategorieReserve)
 
 
-#write.csv(dfnew,file="C:/Users/Soumia/Desktop/Données/dfnewExport.csv",row.names = FALSE, quote = FALSE)
+#write.csv(dfnew,file="C:/Users/Soumia/Desktop/DonnÃ©es/dfnewExport.csv",row.names = FALSE, quote = FALSE)
 summary(dfnew$CategorieReserve)
 summary(dfnew$ReserbeBloquante)
 summary(dfnew$LeveeReserve)
@@ -272,7 +282,7 @@ summary(dfnew$LeveeReserve)
 #appel de la fonction
 #doublons <- duplicated2(dfnew$Id)
 
-#eleminer les doublons de la base de données
+#eleminer les doublons de la base de donnÃ©es
 #connaitre le nombre de doublons 
 length(dfnew$Id)
 length(duplicated(dfnew$Id))
@@ -281,16 +291,22 @@ dfnew<-dfnew[-which(duplicated(dfnew$Id)),]
 
 #le compte est bon 
 nrow(dfnew)
-#exportation de la base de données 
-write.csv(dfnew,file="C:/Users/Soumia/Desktop/Données/dfnewExport.csv",row.names = FALSE )
+#exportation de la base de donnÃ©es 
+write.csv(dfnew,file="C:/Users/Soumia/Desktop/DonnÃ©es/dfnewExport.csv",row.names = FALSE )
 #test
-#t <- read.csv("c:/Users/Soumia/Desktop/Données/dfnewExport.csv",header = TRUE, sep =',')
+#t <- read.csv("c:/Users/Soumia/Desktop/DonnÃ©es/dfnewExport.csv",header = TRUE, sep =',')
 
-#verifier les modalités des variables categorielles
+#verifier les modalitÃ©s des variables categorielles
 levels(dfnew$CategorieReserve)
 levels(dfnew$ReserbeBloquante)
 levels(dfnew$LeveeReserve)
 
+#test de dependance
+data <- c(10,11,13,14)
+#Hyp testing pour la prob que notre hypothese est vrai
+chisq.test(data)
+#X-squared = 0.83333, df = 3, p-value = 0.8415
+#valeur critique d'apres la table; p-value sup a 0.05 dc on accepte H0
 
 #quelques calculs sur des variables categorielles 
 #1
@@ -301,16 +317,16 @@ ggplot(dfnew)+
   geom_mosaic(aes(x=product(LeveeReserve,ReserbeBloquante), fill=LeveeReserve))+
   ylab("leveeRSV")+
   xlab("Bloquante")+
-  ggtitle("Répartition des données en fonction du leveeReserve de si elles sont bloquantes ou pas")
+  ggtitle("RÃ©partition des donnÃ©es en fonction du leveeReserve de si elles sont bloquantes ou pas")
 
-#sur celles non bloquantes on a plus de reserve levée que de non levée
-#par contre pour le bloquantes on a plus de non levée que de levée
+#sur celles non bloquantes on a plus de reserve levÃ©e que de non levÃ©e
+#par contre pour le bloquantes on a plus de non levÃ©e que de levÃ©e
 
 #2
 ggplot(dfnew)+
   geom_mosaic(aes(x=product(LeveeReserve,CategorieReserve), fill=LeveeReserve), offset = 0.05)+
   ylab("LeveeReserve")+
   xlab("Categorie_RSV")+
-  ggtitle("Répartition des données en fonction des Categories")+
+  ggtitle("RÃ©partition des donnÃ©es en fonction des Categories")+
   scale_fill_manual(values=c("#EE00EE", "#636363"))+
   theme(axis.text.x = element_text(angle=30, hjust=1, vjust=1))
