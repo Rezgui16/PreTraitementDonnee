@@ -324,3 +324,4 @@ ggplot(dfnew)+
   ggtitle("Répartition des données en fonction des Categories")+
   scale_fill_manual(values=c("#EE00EE", "#636363"))+
   theme(axis.text.x = element_text(angle=30, hjust=1, vjust=1))
+

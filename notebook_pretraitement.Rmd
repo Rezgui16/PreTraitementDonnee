@@ -8,10 +8,14 @@ This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute
 Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Ctrl+Shift+Enter*. 
 
 ```{r}
+#Nous rappelons que le nettoyage des données est une phase trés importantes et primordiale avant chaque analyse, c'est ce qui permettra la validation des données, nous proposons les differentes etapes qui ont été appliquées.
+
 #importation des librairies necessaires au traitement des donnÃ©es
 library(funModeling)
 library(dplyr)
 library (plyr)
+library(ggplot2)
+library(ggmosaic)
 ```
 
 
@@ -151,11 +155,11 @@ summary(dfnew$ModeleReserve)
 dfnew$Metier[dfnew$Metier %in% c("PEINTURE 4B3","PEINTURE","Peinture","12-Peinture","Peintures","Peinture+Signalétique","LOT 13 - PEINTURE",
                                  "PEINTURE RAVALEMENT NETTOYAGE","B1.12-PSG - PEINTURE  - SIGNALETIQUE","A11-PSG - PEINTURE  - SIGNALÉTIQUE",
                                  "08 - PEINTURE","PEINTURE 4B1","PEINTURE / REVETEMENT","Peinture intérieure","Lot 12 - Peinture"
-                                 ,"PEINTRE","LOT 10 - PEINTURE / REVÊTEMENTS MURALS","Peintures (A2-A3-A4 )")] <- "PEINTURE"
+                                 ,"PEINTRE","LOT 10 - PEINTURE / REVÊTEMENTS MURALS","Peintures (A2-A3-A4 )","REVETEMENTS MURAUX","03 PEINTURE","PEINTURE ETU + SEN","Peintures (A1 et sous-sol )","11 PEINTURE","¨Peinture extérieure","Peinture DOCK 1","REVTMENT SOL PEINTURE","Peinture faience sols souples","Revêtement de mur","PEINTURE INTUMESCENTE","Peintures - Sols souples")] <- "PEINTURE"
 
 #plomberie
 dfnew$Metier[dfnew$Metier %in% c("Plomberie","PLOMBERIE","PLOMBERIE LOGEMENT","Plomberie - sanitaire","A13-PLB - PLOMBERIE",
-                                 "Plomberie sanitaire","13- Plomberies","LOT 16 - PLOMBERIE")] <- "PLOMBERIE"
+                                 "Plomberie sanitaire","13- Plomberies","LOT 16 - PLOMBERIE","Plombier","Plomberie Sanitaire","02 PLOMBERIE","PLOMBERIE 2","GENERALE PLOMBERIE","ML4 CVC - PLOMBERIE -RIA","10 - PLOMBERIE","Plomberie et sanitaire","AXIMA PLB","PLOMBERIE SANITAIRE","Plomberie NO MODELE","PLOMBERIE - SANITAIRES")] <- "PLOMBERIE"
 
 #il faut au moment de la lecture du fichier faire STRINGFACTOR= FALSE chose qui ne m'arrange pas, ça me donne pas accée au differents levels
 #je dois convertir en caractere puis remetter en factor à chaque changement 
@@ -167,20 +171,17 @@ dfnew$Metier[dfnew$Metier %in% c("CFO - CFA","ELECTRICITE (CDC)","CFA - CFO","EL
                                  "Electricité CFA/ CFO/SSI","COURANT FORT MISE EN SERVICE & ESSAIS","COURANT FORT AUTOCONTROLES",
                                  "B3-CFO - COURANTS FORTS","Courants Forts","ELECTRICITE CFO/CFA","Electricité B. T.",
                                  "12 - CFO/CFA","Courants Faibles","Electricite CFO/CFA","Electricité","CFO CFA","CFO","Electricité courants forts",
-                                 "Courant Fort","ELECTRICITE (CFA)","LOT - ELECTRICITE","ELECTRIQUE","ELEC","ELECTRICITE CFA")] <- "ELECTRICITE"
+                                 "Courant Fort","ELECTRICITE (CFA)","LOT - ELECTRICITE","ELECTRIQUE","ELEC","ELECTRICITE CFA","16-Courant fort – Courant faible","COURANT FORT","B4-CFA - COURANTS FAIBLES","Courant fort","Electricité (CFO-CFA)","Electricté","A15-CFA - COURANTS FAIBLES","CFA","ELECTRICITE BT DIVANO","CFA-CFO","04 LOT TECH CVC CFO CFA","COURANT FAIBLE","LOT ELECTRICITE","ELECTRICITÉ SS","Elec CIRA","01 ELECTRICITE","LOT 15 - ELECTRICITE","Elec CHAUDELEC","ELECTRICITE","CFA-DI","ELECTRICITE BT MILA","Electricité CFO CFA","ELECTRICITE (CFO-lot 23)","LOT 17 - CFO/ CFA","14 ELECTRICITE CFO_CFA")] <- "ELECTRICITE"
 
 dfnew$Metier[dfnew$Metier %in% c("Plomberie / CVC","13/14-Plomberies / CVC","Plomberie Sanitaire + CVC",
                                  "Plomberie/Sanitaire/CVC","CVC PLOMBERIE","Plomberie CVC","PLOMBERIE / CVC",
-                                 "B2.3-PFS - PLOMBERIE - FLUIDES SPECIAUX","Plomberie / Chauffage","PLOMBERIE & CHAUFFAGE",
-                                 "PLOMBERIE CVC","Chauffage / Plomberie / Ventilation","PLOMBERIE CHAUFFAGE ECS VMC","CLIMATISATION VENTILATION PLOMBERIE",
-                                 "Plomberie - CVC","CVC/PB")]<-"PLOMBERIE+CVC"
+                                 "B2.3-PFS - PLOMBERIE - FLUIDES SPECIAUX","Plomberie / Chauffage","PLOMBERIE &   CHAUFFAGE", "PLOMBERIE CVC","Chauffage / Plomberie / Ventilation","PLOMBERIE CHAUFFAGE ECS VMC","CLIMATISATION VENTILATION PLOMBERIE","Plomberie - CVC","CVC/PB","PLOMBERIE CHAUFFAGE VENTILATION","CVC/PLB","PLOMBERIE CVC DESENFUMAGE","PLOMBERIE/CVC","CLIMATISATION VMC PLOMBERIE","Lot 14 - Chauffage Ventil Plomb","ML4 CVC - PLOMBERIE -RIA","PLOMBERIE / CHAUFFERIE","PLOMBERIE VENTILATION","VENTILATION - CLIM - DESENFUMAGE - PLOMB. - SANITAIRES...")]<-"PLOMBERIE+CVC"
 
 dfnew$Metier[dfnew$Metier %in% c("B1.1-GRO - GROS-OEUVRE - MACONNERIES","A1-GRO - GROS OEUVRE - MACONNERIES - RAVALEMENT",
-                                 "14 Maçonnerie","CCO - MACONNERIE","Maçonnerie")] <- "MACONNERIE"
+                                 "14 Maçonnerie","CCO - MACONNERIE","Maçonnerie","1-Maçonnerie","RESERVATIONS MACONNERIE")] <- "MACONNERIE"
 
 dfnew$Metier[dfnew$Metier %in% c("GROS OUVRE","Gros oeuvre","Gros-Ouvre","Gros Oeuvre","Gros ouvre","GROS OEUVRE",
-                                 "GROS OEUVRE","GROS  OEUVRE","ML1 INSTALLATION DE CHANTIER - GROS OEUVRE","Gros Ouvre",
-                                 "1-Gros Oeuvre")] <- "GROS OEUVRES"
+                                 "GROS OEUVRE","GROS  OEUVRE","ML1 INSTALLATION DE CHANTIER - GROS OEUVRE","Gros Ouvre", "1-Gros Oeuvre","Gros-Œuvre","Gros œuvre","Gros Œuvre","07 Gros œuvre","02 - GROS OEUVRE ETENDU","GROS-OEUVRE")] <- "GROS OEUVRES"
 
 dfnew$Metier[dfnew$Metier %in% c("Menuiserie intérieure","MENUISERIES EXTERIEURES/OCCULTATIONS","Menuiserie intérieure bois",
                                  "Menuiserie intérieure (placard, meuble)","A9-MIN - MENUISERIES INTÉRIEURES",
@@ -197,15 +198,15 @@ dfnew$Metier[dfnew$Metier %in% c("Menuiserie intérieure","MENUISERIES EXTERIEUR
                                  "MENUISERIE EXT/ FOURNITURE PVC","MENUISERIE EXTERIEURE","LOT 5 - MENUISERIES EXTERIEURES / FACADES /STORES",
                                  "MENUISERIES EXTERIEURES_OCCULTATIONS 2","LOT 07 - MENUISERIES INTERIEURES",
                                  "B1.2-MFA - MENUISERIES EXTERIEURES - FACADES","Menuis. ext. PVC","METALLERIE SERRURERIE",
-                                 "Menuiserie intérieure (portes, plinthes)","04 - Menuiserie intérieures")] <- "MENUISERIE"
+                                 "Menuiserie intérieure (portes, plinthes)","04 - Menuiserie intérieures","Menuiseries Intérieures","Menuiseries extérieures aluminium","Menuiseries Extérieures Occultation","Menuiserie Exterieures Aluminium","Menuiseries Intérieures Métalliques","MENUISERIES","MENUISERIES EXTERIEURES BOIS","Lot 09 - Menuiseries Interieures","Menuiserie extérieure ALU","Menuiseries Intérieures bois","Menuiseries Extérieures","MENUISERIES EXTERIEURES","Menuiseries intérieures","MENUISERIE PVC","Menuiseries Extérieures Métalliques","Menuiseries ext","Lot 06 - MENUISERIES EXTERIEURES","MENUISERIES EXTERIEURES /INTERIEURES/ VOLETS ROULAN...","MENUISERIE INTÉRIEURE/EXTÉRIEURE")] <- "MENUISERIE"
 
 dfnew$Metier[dfnew$Metier %in% c("CHAUFFAGE VENTILATION CLIMATISATION","B2.1-CVC - CHAUFFAGE VENTILATION CLIMATISATION DESENFUMAGE"
                                  ,"A12.1-CVC - CHAUFFAGE VENTILATION CLIMATISATION DESENFUMAGE","14-CVC","CVC - D","LOT 15 - CVC",
-                                 "Chauffage, Ventilation, Climatisation et désenfumage","Ventilation")] <- "CVC"
+                                 "Chauffage, Ventilation, Climatisation et désenfumage","Ventilation","Chauffage Ventilation Climatisation","Chauffage - Ventilation","09 - CVC","CHAUFFAGE","LOT 16 - CVC","VENTILLATION","CVCD","RESERVATIONS CVC	","CVC / Froid","GENIE CLIMATIQUE","CHAUFFAGE VENTILATION CLIMATISATiON","VENTILATION","CLIMATISATION - VENTILATION - SANITAIRE SS","VENTILATION","Climatisation,Chauffage, Ventilation, Desenfumage","CHAUFFAGE/CLIM")] <- "CVC"
 
 dfnew$Metier[dfnew$Metier %in% c("A4-SER - SERRURERIE","SERRURERIE_METALLERIE","ML2&3 ETANCHEITE - COUVERTURE - FACADE - SERRURERIE",
                                 "SERRURERIE","B1.4-SMS - SERRURERIE - METALLERIE - OUVRAGES DE SURETE","Serrurerie",
-                                "LOT 11 - MENUISERIE INTÉRIEURES / SERRURERIE / MÉTALLERIE")] <- "SERRURERIE"
+                                "LOT 11 - MENUISERIE INTÉRIEURES / SERRURERIE / MÉTALLERIE","SERRURERIES_METALLERIES","Métallerie-Serrurerie","Métallerie Serrurerie","Serrurerie - Charpente","Serrurerie Métallerie","Métallerrie - Serrurerie","SERRURERIE METALLERIE","Métallerie et serrurerie","Métallerie et serrurerie","05 - Serrurerie","SERRURERIES METALLERIE","Serrurerie / Ossatures secondaires","METALLERIE // SERRURERIE")] <- "SERRURERIE"
 
 dfnew$Metier[dfnew$Metier %in% c("Faux Plafonds - GRG","Cloisons modulaires/Faux plafond",
                                  "REVETEMENTS DURS",
@@ -216,11 +217,11 @@ dfnew$Metier[dfnew$Metier %in% c("Faux Plafonds - GRG","Cloisons modulaires/Faux
                                  "Cloisons Amovibles","4-Cloisons Amovible","Cloison","CLOISONS / DOUBLAGES",
                                  "4-Cloison Doublage","A5-CDL - CLOISONS - DOUBLAGES","Cloison Doublage","Revêtement de sol et murs","4-Faux Plafond BA13",
                                  "Cloisons de laboratoires","Faux Plafonds","Cloisons+Doublages+Plafonds suspendus","LOT 11 - FAUX PLAFOND","Plafond",
-                                 "PLATERIE -FAUX PLAFONDS","06 - Cloisons - Doublages - Faux-Plafond","CLOISON - PLATRERIE","Plafonds ","Cloisons plâtrerie")] <- "PLATERERIE"
+                                 "PLATERIE -FAUX PLAFONDS","06 - Cloisons - Doublages - Faux-Plafond","CLOISON - PLATRERIE","Plafonds ","Cloisons plâtrerie","CLOISONS DOUBLAGES / FAUX PLAFONDS","B1.5-CDL - CLOISONS - DOUBLAGES","PLAFONDS SUSPENDUES","Cloisons et plafonds","Cloisons Doublages Et Faux Plafonds","Cloisons Doublages","Cloisons doublage Faux Plafond","Doublage Faux Plafond","MEN INT CLOISON DOUBLAGE","Isolation parkings (Fx-plafond)","Lot 10 - Plafonds suspendus","Cloisons-faux plafonds","Cloison - Doublage - Faux plafonds","CLOISONS DOUBLAGES ET FAUX PLAFONDS","Cloisons Plâtre","Isolation Cloison Doublage FP","Plafond rayonnant","LOT 6 - PLATERIE / CLOISONS / DOUBLAGES","FAUX PLAFOND / CLOISONS DOUBLAGES","Plafonds Filtrants")] <- "PLATERERIE"
 
 dfnew$Metier[dfnew$Metier %in% c("Facades","REVETEMENTS DE FACADE","Revêtements de façades","REVETEMENTS DE FACADES"
                                  ,"REVETEMENTS DE FACADES","TRAITEMENT DE FACADE","Facade","FACADE","Façades","FACADES","FACADE - BARDAGE",
-                                 "Revêtements de facade+isolation+bardages","3-Façades respirantes","REVETEMENT_FAçADE","03 - Menuiseries extérieures - Façades")] <- "REVETEMENT FAçADE"
+                                 "Revêtements de facade+isolation+bardages","3-Façades respirantes","REVETEMENT_FAçADE","03 - Menuiseries extérieures - Façades","Revêtement de façades","Revêtement de façades","Traitement de façade et couverture","Façades isolantes","FACADE LOGGIA","FAÇADES","Façade","TRAITEMENT DE FACADES")] <- "REVETEMENT FAçADE"
 
 dfnew$Metier[dfnew$Metier %in% c("Carrelage & Sol souple","Revêtement de sols souples","CARRELAGE FAIENCE","A8-RSD - REVÊTEMENTS DE SOL ET MURS DURS",
                                  "Sols Durs et Minces","Sols durs","SOLS FAIENCE PARQUET","Faïence","Revêtement de sol","CARRELAGE",
@@ -230,22 +231,30 @@ dfnew$Metier[dfnew$Metier %in% c("Carrelage & Sol souple","Revêtement de sols s
                                  "B1.9-RSD - REVETEMENTS DE SOL ET MURS DURS","8-Sols Durs","REVETEMENTS DE SOL","LOT 7 - REVÊTEMENTS SOLS",
                                  "Revêtements de sols","B1.9A-RSD - RESINE DE SOL","SOLS COULES","Revêtements de sols","Revêtements de sols ",
                                  "Revêtments de sols durs","Carrelage Faience","REVÊTEMENT DE SOLS SOUPLES","Sols Souples - Sols durs","Sols PVC",
-                                 "LOT 12 - REVETEMENT DE SOLS SOUPLES ET DURS","Revêtement de sol souple")] <- "REVETEMENT SOL"
+                                 "LOT 12 - REVETEMENT DE SOLS SOUPLES ET DURS","Revêtement de sol souple","Carrelages","Carrelage faïence","Revêtement de sol et Carrelage faïence","7-Faux Plancher","B1.11-RSS - REVETEMENTS DE SOLS SOUPLES","SOL","9- Sols souples","Lot 11 - Revêtements de sol","Parquets en bois","Moquette","FAIENCE","Revêtements de sol","Faux Plancher","REVETEMENTS DE SOL ET FAIENCES","Carrelage / Faience","FAUX PLANCHER","CARRELAGE","REVETEMENT DE SOL FAIENCE","plancher technique","Revêtement de sol dur","07 - REVÊTEMENTS DE SOL","Carrelage/Faïence","Parquet","Revêtement De Sols Parquets","PARQUETS","LOT 8 - FAUX PLANCHERS","RVT SOLS SOUPLES","SOLS SOUPLES / CARRELAGE","10-Parquet","A7-FPT - FAUX PLANCHER","Carrelage- sol souple","B1.8-FPT - FAUX PLANCHER","Faience","Faux planchers","SOLIER","Calo Isol Domm","CARRELAGE - FAIENCE - SOLS SOUPLES","FAUX-PLANCHER","Faillence","10 SOLS SOUPLES","Revêtements de sols - Peinture","Parquets stratifiés")] <- "REVETEMENT SOL"
 
-dfnew$Metier[dfnew$Metier %in% c("Nettoyage","NETTOYAGE")] <- "NETTOYAGE"
-dfnew$Metier[dfnew$Metier %in% c("TUYAUTERIE","Tuyauterie","Tuyauteries CREO","Tuyauteur","Tuyauteries TEAM FLUIDES","Tuyauteries Doncieux")] <- "TUYAUTERIE"
-dfnew$Metier[dfnew$Metier %in% c("DEMOLITION")] <- "DEMOLITION"
+dfnew$Metier[dfnew$Metier %in% c("Nettoyage","NETTOYAGE","Nettoyage / Hygiène")] <- "NETTOYAGE"
+dfnew$Metier[dfnew$Metier %in% c("TUYAUTERIE","Tuyauterie","Tuyauteries CREO","Tuyauteur","Tuyauteries TEAM FLUIDES","Tuyauteries Doncieux","TUYAUTERIES")] <- "TUYAUTERIE"
+dfnew$Metier[dfnew$Metier %in% c("DEMOLITION","Démolition","Démolition - désamiantage")] <- "DEMOLITION"
 dfnew$Metier[dfnew$Metier %in% c("RENOVATION")] <- "RENOVATION"
-dfnew$Metier[dfnew$Metier %in% c("Charpente métallique","CHARPENTE")] <- "CHARPENTE"
+dfnew$Metier[dfnew$Metier %in% c("Charpente métallique","CHARPENTE","CHARPENTE BOIS","Charpente béton")] <- "CHARPENTE"
 dfnew$Metier[dfnew$Metier %in% c("Etat des lieux")] <- "ETAT DES LIEUX"
-dfnew$Metier[dfnew$Metier %in% c("Terrassement - GO")] <- "TERASSEMENT"
+dfnew$Metier[dfnew$Metier %in% c("D2-SD2 - VIDEO SURVEILLANCE SURETE - VIFID","A18-NAC - NACELLE DE MAINTENANCE","RENFORTS")] <- "MAINTENANCE"
+dfnew$Metier[dfnew$Metier %in% c("LOT 2 - DESAMIANTAGE")] <- "DESAMIANTAGE"
+dfnew$Metier[dfnew$Metier %in% c("Terrassement - GO","TERRASSE")] <- "TERASSEMENT"
+dfnew$Metier[dfnew$Metier %in% c("ETANCHEITE","Etanchéité","B1.3-ETA - ETANCHEITES","2-Etancheité","A3-ETA - ETANCHEITES","14 Etanchéité","Etancheité")] <- "ETANCHEITE"
+dfnew$Metier[dfnew$Metier %in% c("Couverture","COUVERTURE-BARDAGE","COUVREUR","COUVERTURE/ ETANCHEITE/ BARDAGE","BARDAGE COUVERTURE","Toitures - Couverture")] <- "COUVERTURE"
+dfnew$Metier[dfnew$Metier %in% c("Portes palière","Portes Glissantes Automatiques","Portes Façades","PORTE SECTIONNELLE","Porte de Parking")] <- "INSTALLATION PORTE"
 dfnew$Metier <- factor(dfnew$Metier)
-summary(dfnew$Metier)
+#summary(dfnew$Metier)
 
 
 ```
+
+
 ```{r}
-summary(dfnew$Entreprise)
+#afin de voir les frequences des differentes modalités , pour pouvoir recoder les modalités 
+freq(dfnew$Metier)
 ```
 
 
@@ -343,16 +352,57 @@ nrow(dfnew)
 write.csv(dfnew,file="C:/Users/Soumia/Desktop/Données/dfnewExport.csv",row.names = FALSE )
 #test
 t <- read.csv("c:/Users/Soumia/Desktop/Données/dfnewExport.csv",header = TRUE, sep =',')
+
+```
+
+```{r}
+View(dfnew)
 View(t)
+```
+
+```{r}
+#nombre total des reserves 262614 Reserves 
+
+length(dfnew$Id)
+```
+```{r}
+data <- c(10,11,13,14)
+#Hyp testing on the prob that our assumtion is correct
+chisq.test(data)
+#X-squared = 0.83333, df = 3, p-value = 0.8415
+#crirical from table p-value is greater than 0.05 so we can accept H0
+```
+```{r}
+#regression lineaire à revoir 
+    r <- lm(ModeleReserve~LeveeReserve+CategorieReserve,data = new)
+abline(r)
+summary(r)
+names(r)  #to access regression object
+fitted(r)
+plot(new$LeveeReserve,r$fitted)
+
 ```
 
 
 ```{r}
-#Mise en place de quelques visualisations
+#Mise en place de quelques visualisations et calculs
+#1 : EXEC
+#2 : GPA
+#3 : OPR
+freq(dfnew$CategorieReserve)
+```
+```{r}
+#interface de recodage 
+
+```
+
+
+
+```{r}
+
 #quelques calculs sur des variables categorielles 
-#1
-library(ggplot2)
-library(ggmosaic)
+#1 : bloquante 
+#0 : non bloquante
 
 ggplot(dfnew)+
   geom_mosaic(aes(x=product(LeveeReserve,ReserveBloquante), fill=LeveeReserve))+
@@ -375,11 +425,65 @@ ggplot(dfnew)+
   scale_fill_manual(values=c("#EE00EE", "#636363"))+
   theme(axis.text.x = element_text(angle=30, hjust=1, vjust=1))
 ```
+```{r}
+TC <- table(dfnew$Metier, dfnew$LeveeReserve,useNA = "ifany")
+df2 <- prop.table(TC,2)
+df2 <- df2*100
+df2 <- round (df2, 2)
+df2 <- as.data.frame(df2)
+names(df2) <- c("Metier", "LeveeReserve", "p")
+
+df2
+
+##         status sex    p
+## 1       vivant   F 72.2
+## 2   dcd_autres   F  5.6
+## 3 dcd_Melanome   F 22.2
+## 4       vivant   M 54.4
+## 5   dcd_autres   M  8.9
+## 6 dcd_Melanome   M 36.7
+
+```
+
+
+
+```{r}
+#les plots bar
+library(ggplot2)
+
+ggplot(df2, aes(x=LeveeReserve, y=p, fill=Metier)) +    
+   geom_bar(stat="identity", position="stack", width=0.5) +
+   coord_flip()+
+   xlab("LeveeReserve")+
+   ylab("pourcentage")+
+   scale_fill_manual(values=c("#BAB1B1","#87CEFA","#1C86EE"),limits=c("PEINTURE", "ELECTRICITE", "PLOMBERIE"))+
+   theme_classic()
+```
 
 
 ```{r}
 
+# exemple 
+ggplot(dfnew) +
+  aes(x = CategorieReserve, fill = LeveeReserve) +
+  geom_bar(position = "dodge") +
+  xlab("CategorieReserve") +
+  ylab("Effectifs") +
+  labs(fill = "LeveeDeReserve")
+
 ```
+```{r}
+# exemple 
+ggplot(dfnew) +
+  aes(x = CategorieReserve, fill = ReserbeBloquante) +
+  geom_bar(position = "dodge") +
+  xlab("EXEC       GPA      OPR") +
+  ylab("Effectifs") +
+  labs(fill = "ReserbeBloquante")
+```
+
+
+
 
 
 Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Ctrl+Alt+I*.
