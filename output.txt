@@ -1,0 +1,56 @@
+                                    Id          DateCreation        DateDerniereModification
+ 00007AEA-387B-BCD0-BC15-03B4C11673DA:     1   Min.   :2014-03-06   Min.   :2014-09-28      
+ 0000F78E-CFF7-4604-9070-41C448F0DAB6:     1   1st Qu.:2017-08-28   1st Qu.:2017-11-03      
+ 0001052B-53C5-4C5B-9758-C0AA1069C8F7:     1   Median :2018-04-27   Median :2018-07-25      
+ 0001065D-6C15-4096-BD3D-9929EE636516:     1   Mean   :2018-04-18   Mean   :2018-06-15      
+ 000139C1-2E11-0402-8B5F-96A32DA7B0EB:     1   3rd Qu.:2019-01-07   3rd Qu.:2019-02-19      
+ 0001556F-1648-61B8-6033-ED269B89185B:     1   Max.   :2019-07-26   Max.   :2019-07-26      
+ (Other)                             :262608                                                
+                         Entreprise     DateLeveePotentielle  SousTraitant          Mandataire        
+ SICRA (VCF)                  :  9123   Min.   :2014-04-17   Min.   :2014-03-08   Min.   :2014-03-08  
+ VCF                          :  8193   1st Qu.:2017-02-16   1st Qu.:2017-09-25   1st Qu.:2017-10-03  
+ LEON GROSSE                  :  7259   Median :2017-03-24   Median :2018-08-09   Median :2018-06-18  
+ CAMPENON BERNARD CONSTRUCTION:  6240   Mean   :2017-09-18   Mean   :2018-05-27   Mean   :2018-05-07  
+ HSM2                         :  5994   3rd Qu.:2017-10-12   3rd Qu.:2019-01-29   3rd Qu.:2018-12-13  
+ EURO TECH DECOR              :  3980   Max.   :2545-04-24   Max.   :2019-07-26   Max.   :2020-10-09  
+ (Other)                      :221825   NA's   :259593       NA's   :209594       NA's   :122891      
+ DateDeLeveeMOEMOA                   LocalisationTree              ModeleReserve    CategorieReserve
+ Min.   :2014-04-25   ARCHI | RDC            :  3725   AUTRE              :229644   1: 95887        
+ 1st Qu.:2017-09-21   Archi | 2 - RDC | 102_G:  3273   Dégradation        :  1841   3:  3530        
+ Median :2018-06-18   RDC                    :  2674   NETTOYAGE          :  1468   2:163197        
+ Mean   :2018-04-18   Archi | 4 - R+1 | 104_F:  2430   JOINT              :  1390                   
+ 3rd Qu.:2018-10-27   SIEGE | R+1            :  2303   Impact/rayures etc.:  1219                   
+ Max.   :2021-10-09   R+2                    :  2172   Bosses/creux       :   989                   
+ NA's   :166424       (Other)                :246037   (Other)            : 26063                   
+ ReserveBloquante            Metier               CategorieMetier 
+ 0:260320         PEINTURE      :64970   Anomalie         :73341  
+ 1:  2294         MENUISERIE    :31760   Anomalies        :28421  
+                  ELECTRICITE   :25716   DEFAUT D'ASPECT  :24372  
+                  REVETEMENT SOL:17971   Défaut d'aspect  :19346  
+                  PLATERERIE    :15962   ANOMALIE         :15075  
+                  PLOMBERIE     :12859   MANQUE PRESTATION:11592  
+                  (Other)       :93376   (Other)          :90467  
+                                ChantierId                                          Chantier     
+ 6627BE07-004A-49E0-91E3-58D5E898AB1A: 15722   Sicra St ouen                            : 15722  
+ 63E724F3-52E4-4C00-AA58-1F3B4B3447B1: 12130   NANTERRE - 92 -  Les Provinces Françaises: 12130  
+ 7B394AB5-5FD3-4C62-94A9-E798AC0FB96B: 11711   OPR - CONSTRUCTION DU SIEGE SOCIAL D'ADP : 11711  
+ EF7CD26D-C8F6-4682-9052-50AE4DA0D745:  8051   PFF NCF - SUIVI DE CHANTIER              :  8051  
+ 9974719E-E90A-4001-90AA-F689080F0CC3:  7400   Chantier Village Méditerranée            :  7400  
+ 5F470A3C-F2B7-4EF3-82C3-8224A8587472:  7035   PFF TER - SUIVI DE CHANTIER              :  7035  
+ (Other)                             :200565   (Other)                                  :200565  
+                             TypeChantier                                   EntiteId    
+ Logements                         :64817   ED2B1DE3-A571-4201-8324-42DE8A147F7C:54606  
+ LOGEMENTS                         :41754   D99DBAA5-365F-4C2D-BF9F-36A3949889B7:54496  
+ Construction du siège social d'ADP:19475   8B959C2B-C04F-4A34-B823-F8CF71ECB0D3:19475  
+ Pole fiduciaire                   :15104   C6B73ABD-3A83-4527-BCBE-C8FDF6D3C87F:14729  
+ EHPAD                             :13141   9D806864-439A-409C-87B1-05D61685C405:14522  
+ Usine et bureaux                  : 9558   7B01D058-6214-4F2C-9D8E-0953E0C17F4D: 9271  
+ (Other)                           :98765   (Other)                             :95515  
+                           Entite      LeveeReserve
+ CAMPENON BERNARD CONSTRUCTION:54606   0:101255    
+ GTM                          :54496   1:161359    
+ HERVE                        :19475               
+ ENGIE AXIMA                  :14729               
+ VCF OUEST                    :14522               
+ ANGEVIN GROUPE               : 9271               
+ (Other)                      :95515               
